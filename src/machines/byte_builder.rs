@@ -5,11 +5,20 @@ use crate::machines::{
     byte_builder::binary_byte::{BinaryByte, to_decimal},
 };
 
-mod binary_byte;
+pub mod binary_byte;
 
 pub struct ByteBuilder {
     byte: BinaryByte,
     multiplier: u32,
+}
+
+impl ByteBuilder {
+    pub fn byte(&self) -> BinaryByte {
+        self.byte
+    }
+    pub fn mult(&self) -> u32 {
+        self.multiplier
+    }
 }
 
 impl SlotMachine for ByteBuilder {
