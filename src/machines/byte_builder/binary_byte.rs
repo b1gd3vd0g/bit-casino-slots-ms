@@ -1,3 +1,7 @@
+//! This module defines the type alias `BinaryByte` which is used in the ByteBuilder machine to
+//! store its value. It provides functionality for converting binary bytes to integer bytes, and
+//! vice versa. It also provides a function to convert it into an easily readable bitstring.
+
 pub type BinaryByte = [bool; 8];
 
 /// Convert the binary byte **in place** to be its negative equivalent.
