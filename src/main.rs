@@ -1,3 +1,4 @@
+mod failure;
 mod machines;
 mod requests;
 mod router;
