@@ -3,6 +3,8 @@
 //! This module describes the trait SlotMachine, which ALL slot machines must implement, regardless
 //! of their complexity.
 
+pub mod byte_builder;
+
 /// This trait must be implemented by any slot machine struct defined within this module.
 pub trait SlotMachine {
     /// Construct a new slot machine.
