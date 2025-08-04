@@ -1,3 +1,5 @@
+mod machines;
+
 fn main() {
-    println!("Hello, world!");
+    println!("Gooooooood morning vietnam!");
 }
