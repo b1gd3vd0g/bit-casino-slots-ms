@@ -12,16 +12,17 @@ fn sign_change(bin: &mut BinaryByte) {
     }
 }
 
-pub fn to_binary(mut dec: i8) -> BinaryByte {
+pub fn to_binary(dec: i8) -> BinaryByte {
+    let mut remaining = dec.clone();
     let base: i8 = 2;
-    let neg = dec < 0;
-    dec = (dec as i16).abs() as i8;
+    let neg = remaining < 0;
+    remaining = (remaining as i16).abs() as i8;
 
     let mut bin = [false; 8];
     for (i, bit) in bin.iter_mut().enumerate() {
         let value = base.pow(7 - i as u32);
-        if dec - value >= 0 {
-            dec -= value;
+        if remaining - value >= 0 {
+            remaining -= value;
             *bit = true;
         }
     }
@@ -33,15 +34,16 @@ pub fn to_binary(mut dec: i8) -> BinaryByte {
     bin
 }
 
-pub fn to_decimal(mut bin: BinaryByte) -> i8 {
-    let neg = bin[0];
+pub fn to_decimal(bin: &BinaryByte) -> i8 {
+    let mut clone = bin.clone();
+    let neg = clone[0];
     let base: i8 = 2;
     if neg {
-        sign_change(&mut bin);
+        sign_change(&mut clone);
     }
 
     let mut dec = 0;
-    for (i, bit) in bin.iter().enumerate() {
+    for (i, bit) in clone.iter().enumerate() {
         let value = base.pow(7 - i as u32) as i8;
         if *bit {
             dec += value;
