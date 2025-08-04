@@ -11,8 +11,8 @@ pub trait SlotMachine {
     fn new() -> Self;
     /// Set the multiplier on the slot machine.
     fn set_mult(&mut self, mult: u32);
-    /// Spin the slot machine.
+    /// Spin the slot machine and calculate the payout.
     fn spin(&mut self);
-    /// Calculate the payout based on the **current state** of the slot machine.
+    /// Return the most recent payout calculated by this slot machine.
     fn payout(&self) -> i128;
 }

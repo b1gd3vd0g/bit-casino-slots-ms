@@ -44,6 +44,7 @@ impl ByteBuilder {
         &self.byte
     }
 
+    /// Determine the payout based on the currently displayed byte.
     fn determine_payout(&mut self) {
         // find out if any special events are happening.
         let mut first = 0;
@@ -74,6 +75,8 @@ impl ByteBuilder {
         }
     }
 
+    /// Make a free spin! This is called automatically when `spin()` is run while there are free
+    /// spins remaining.
     fn free_spin(&mut self) {
         let mut rng = rng();
         for (i, bit) in self.byte.bits().iter_mut().enumerate() {
