@@ -11,10 +11,7 @@
 
 use rand::{Rng, rng};
 
-use crate::machines::{
-    SlotMachine,
-    byte_builder::binary_byte::{BinaryByte, to_decimal},
-};
+use crate::machines::{SlotMachine, byte_builder::binary_byte::BinaryByte};
 
 pub mod binary_byte;
 
@@ -43,8 +40,8 @@ pub struct ByteBuilder {
 
 impl ByteBuilder {
     /// View the byte that is currently displayed.
-    pub fn byte(&self) -> BinaryByte {
-        self.byte
+    pub fn byte(&self) -> &BinaryByte {
+        &self.byte
     }
 
     fn determine_payout(&mut self) {
@@ -52,6 +49,7 @@ impl ByteBuilder {
         let mut first = 0;
         if self
             .byte
+            .bits()
             .iter()
             .enumerate()
             .filter(|&(i, &b)| {
@@ -66,22 +64,37 @@ impl ByteBuilder {
             // Power of Two event:
             self.remaining_free_spins += 1; // 8 - first as u32;
         }
-        let byte = to_decimal(&self.byte);
+        let byte = self.byte.value();
         if byte == 0 {
             // Null Byte event:
             self.total_null_bytes += 1;
-            println!("NULL BYTE EVENT");
             self.curr_payout = 256 * self.multiplier as i128;
         } else {
             self.curr_payout = byte as i128 * self.multiplier as i128;
         }
+    }
+
+    fn free_spin(&mut self) {
+        let mut rng = rng();
+        for (i, bit) in self.byte.bits().iter_mut().enumerate() {
+            *bit = match i {
+                0 => false,
+                _ => rng.random_bool(0.5),
+            };
+        }
+        self.determine_payout();
+        self.total_free_spins += 1;
+        self.total_payout += self.curr_payout;
+        self.avg_payout =
+            self.total_payout as f64 / (self.total_spins + self.total_free_spins) as f64;
+        self.remaining_free_spins -= 1;
     }
 }
 
 impl SlotMachine for ByteBuilder {
     fn new() -> Self {
         ByteBuilder {
-            byte: [false; 8],
+            byte: BinaryByte::new(),
             multiplier: 1,
             curr_payout: 0,
             avg_payout: 0.0,
@@ -103,7 +116,7 @@ impl SlotMachine for ByteBuilder {
     fn spin(&mut self) {
         if self.remaining_free_spins == 0 {
             let mut rng = rng();
-            for bit in self.byte.iter_mut() {
+            for bit in self.byte.bits().iter_mut() {
                 *bit = rng.random_bool(0.65);
             }
             self.determine_payout();
@@ -113,22 +126,6 @@ impl SlotMachine for ByteBuilder {
         } else {
             self.free_spin();
         }
-    }
-
-    fn free_spin(&mut self) {
-        let mut rng = rng();
-        for (i, bit) in self.byte.iter_mut().enumerate() {
-            *bit = match i {
-                0 => false,
-                _ => rng.random_bool(0.5),
-            };
-        }
-        self.determine_payout();
-        self.total_free_spins += 1;
-        self.total_payout += self.curr_payout;
-        self.avg_payout =
-            self.total_payout as f64 / (self.total_spins + self.total_free_spins) as f64;
-        self.remaining_free_spins -= 1;
     }
 
     fn payout(&self) -> i128 {
