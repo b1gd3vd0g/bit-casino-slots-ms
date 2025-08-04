@@ -1,11 +1,12 @@
+mod machines;
+mod requests;
+mod router;
+
 use std::net::SocketAddr;
 
 use tokio::net::TcpListener;
 
 use crate::router::router;
-
-mod machines;
-mod router;
 
 #[tokio::main]
 async fn main() {
