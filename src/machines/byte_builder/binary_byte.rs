@@ -1,5 +1,8 @@
 pub type BinaryByte = [bool; 8];
 
+/// Convert the binary byte **in place** to be its negative equivalent.
+/// # Arguments
+/// - `bin`: The binary byte
 fn sign_change(bin: &mut BinaryByte) {
     for bit in bin.iter_mut() {
         *bit = !*bit;
@@ -12,6 +15,12 @@ fn sign_change(bin: &mut BinaryByte) {
     }
 }
 
+/// Convert an integer into a binary byte.
+/// # Arguments
+/// - `dec`: The decimal number to convert
+/// # Returns
+/// The two's complement binary equivalent
+#[allow(dead_code)]
 pub fn to_binary(dec: i8) -> BinaryByte {
     let mut remaining = dec.clone();
     let base: i8 = 2;
@@ -34,6 +43,11 @@ pub fn to_binary(dec: i8) -> BinaryByte {
     bin
 }
 
+/// Convert a binary byte into an integer.
+/// # Arguments
+/// - `bin`: The binary byte
+/// # Returns
+/// The equivalent integer
 pub fn to_decimal(bin: &BinaryByte) -> i8 {
     let mut clone = bin.clone();
     let neg = clone[0];
@@ -44,14 +58,33 @@ pub fn to_decimal(bin: &BinaryByte) -> i8 {
 
     let mut dec = 0;
     for (i, bit) in clone.iter().enumerate() {
-        let value = base.pow(7 - i as u32) as i8;
+        let value = (base as i16).pow(7 - i as u32) as i8;
         if *bit {
             dec += value;
         }
     }
 
     match neg {
-        true => 0 - dec,
+        true => -1 - dec,
         false => dec,
     }
+}
+
+/// Convert a byte into a bitstring (usually for testing purposes).
+/// # Arguments
+/// - `bin` The binary byte
+/// # Returns
+/// The bitstring representing that byte
+pub fn to_bitstring(bin: &BinaryByte) -> String {
+    let mut bits = String::new();
+    for (i, bit) in bin.iter().enumerate() {
+        bits.push(match *bit {
+            true => '1',
+            false => '0',
+        });
+        if i == 3 {
+            bits.push(' ');
+        }
+    }
+    bits
 }
