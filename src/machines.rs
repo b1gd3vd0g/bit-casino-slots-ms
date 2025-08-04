@@ -1,5 +1,5 @@
 //! This module handles the internal logic of all slot machines. Each speficic slot machine can be
-//! found in its own sub-module here.\
+//! found in its own module here.\
 //! This module describes the trait SlotMachine, which ALL slot machines must implement, regardless
 //! of their complexity.
 
