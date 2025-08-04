@@ -2,7 +2,7 @@
 //! store its value. It provides functionality for converting binary bytes to integer bytes, and
 //! vice versa. It also provides a function to convert it into an easily readable bitstring.
 
-use std::fmt::Debug;
+use std::fmt::{Debug, Display};
 
 pub struct BinaryByte {
     bits: [bool; 8],
@@ -70,8 +70,18 @@ impl BinaryByte {
     }
 }
 
+impl Display for BinaryByte {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut bits = self.to_bitstring();
+        bits.push('\n');
+        f.write_str(&bits)
+    }
+}
+
 impl Debug for BinaryByte {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(&self.to_bitstring())
+        f.debug_struct("BinaryByte")
+            .field("bits", &self.to_bitstring())
+            .finish()
     }
 }
