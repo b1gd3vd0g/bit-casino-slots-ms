@@ -15,6 +15,9 @@ use crate::machines::{SlotMachine, byte_builder::binary_byte::BinaryByte};
 
 pub mod binary_byte;
 
+const NULL_BYTE_EVENT: &str = "NULL";
+const POWER_OF_TWO_EVENT: &str = "2POW";
+
 /// This is the struct storing all of the data for a ByteBuilder machine.
 #[derive(Debug)]
 pub struct ByteBuilder {
@@ -36,6 +39,8 @@ pub struct ByteBuilder {
     total_null_bytes: u128,
     /// The amount of remaining free spins available.
     remaining_free_spins: u32,
+    /// Indicates if a "Special event" is represented by the current byte.
+    event: u8,
 }
 
 impl ByteBuilder {
@@ -44,8 +49,18 @@ impl ByteBuilder {
         &self.byte
     }
 
+    pub fn event(&self) -> Option<String> {
+        Some(String::from(match self.event {
+            0 => return None,
+            1 => NULL_BYTE_EVENT,
+            2 => POWER_OF_TWO_EVENT,
+            _ => panic!("This doesn't happen."),
+        }))
+    }
+
     /// Determine the payout based on the currently displayed byte.
     fn determine_payout(&mut self) {
+        let mut event = 0;
         // find out if any special events are happening.
         let mut first = 0;
         if self
@@ -63,14 +78,17 @@ impl ByteBuilder {
             == 1
         {
             // Power of Two event:
-            self.remaining_free_spins += 1; // 8 - first as u32;
+            self.remaining_free_spins += 1;
+            event = 2;
         }
         let byte = self.byte.value();
         if byte == 0 {
             // Null Byte event:
             self.total_null_bytes += 1;
             self.curr_payout = 256 * self.multiplier as i128;
+            self.event = 1;
         } else {
+            self.event = event;
             self.curr_payout = byte as i128 * self.multiplier as i128;
         }
     }
@@ -106,6 +124,7 @@ impl SlotMachine for ByteBuilder {
             total_free_spins: 0,
             total_null_bytes: 0,
             remaining_free_spins: 0,
+            event: 0,
         }
     }
 
