@@ -27,7 +27,7 @@ impl Failure for TokenAuthnFailure {
     }
 }
 
-pub async fn request_token_authentication(token: String) -> Result<Uuid, TokenAuthnFailure> {
+pub async fn request_token_authentication(token: &str) -> Result<Uuid, TokenAuthnFailure> {
     let client = Client::new();
 
     let mut hm = HeaderMap::new();
