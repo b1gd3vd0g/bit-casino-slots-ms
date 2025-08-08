@@ -7,9 +7,9 @@ A **REST API** written in **Rust** handling **placing bets** and **game logic** 
 
 ### Features
 
-- A custom slot machine game based off of **two's complement binary numbers**
+- A custom slot machine game based off of two's complement binary numbers - **Byte Builder**.
 - Special events (free spins and bonuses) based on spins.
-- Thorough testing and custom game rules to maintain a slight **house edge** while staying fun for players.
+- Thorough tested with customized rules to maintain a slight **house edge** while staying fun for players.
 
 ## How to use this repository
 
