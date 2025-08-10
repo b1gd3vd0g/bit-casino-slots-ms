@@ -70,12 +70,13 @@ pub async fn request_wager(
     let Ok(response) = response else {
         return Err(WagerRequestFailure::ReqFailed);
     };
-
+    println!("{:?}", response);
     Err(match response.status() {
         StatusCode::OK => {
             let balance: TransactionResponse = response.json().await.unwrap();
             return Ok(balance.balance);
         }
+
         StatusCode::CONFLICT => WagerRequestFailure::Conflict,
         StatusCode::UNAUTHORIZED => WagerRequestFailure::Unauthorized,
         _ => WagerRequestFailure::ServerSide,
