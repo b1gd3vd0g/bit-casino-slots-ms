@@ -18,4 +18,4 @@ WORKDIR /app
 COPY --from=builder /app/target/release/bit-casino-slots-ms .
 USER b1gd3vd0g
 EXPOSE 3000
-CMD ["./bit-casino-slots-ms"]
+CMD ["RUST_BACKTRACE=1 ./bit-casino-slots-ms"]
