@@ -23,6 +23,7 @@ pub struct SpinByteBuilderResponse {
     payout: i128,
     byte: String,
     event: Option<String>,
+    balance: u128,
 }
 
 /// This handles a player's request to spin the Byte Builder slot machine.
@@ -73,6 +74,7 @@ pub async fn handle_spin_byte_builder(
             payout: payout,
             byte: machine.byte().to_bitstring(),
             event: machine.event(),
+            balance: bal,
         }),
     )
         .into_response()
