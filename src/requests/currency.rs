@@ -40,7 +40,8 @@ pub enum WagerRequestFailure {
     Conflict,
     ServerSide,
 }
-#[derive(Deserialize)]
+
+#[derive(Deserialize, Debug)]
 pub struct TransactionResponse {
     balance: u128,
 }
@@ -73,8 +74,9 @@ pub async fn request_wager(
     println!("{:?}", response);
     Err(match response.status() {
         StatusCode::OK => {
-            let balance: TransactionResponse = response.json().await.unwrap();
-            return Ok(balance.balance);
+            let balance: Result<TransactionResponse, reqwest::Error> = response.json().await;
+            println!("{:?}", balance);
+            return Ok(0);
         }
 
         StatusCode::CONFLICT => WagerRequestFailure::Conflict,
