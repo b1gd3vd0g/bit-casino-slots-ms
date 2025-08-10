@@ -74,7 +74,7 @@ pub async fn request_wager(
     println!("{:?}", response);
     Err(match response.status() {
         StatusCode::OK => {
-            let balance: Result<TransactionResponse, reqwest::Error> = response.json().await;
+            let balance = response.text().await.unwrap();
             println!("{:?}", balance);
             return Ok(0);
         }
