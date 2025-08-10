@@ -74,9 +74,8 @@ pub async fn request_wager(
     println!("{:?}", response);
     Err(match response.status() {
         StatusCode::OK => {
-            let balance = response.text().await.unwrap();
-            println!("{:?}", balance);
-            return Ok(0);
+            let balance: TransactionResponse = response.json().await.unwrap();
+            return Ok(balance.balance);
         }
 
         StatusCode::CONFLICT => WagerRequestFailure::Conflict,

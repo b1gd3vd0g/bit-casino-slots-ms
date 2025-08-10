@@ -44,7 +44,7 @@ pub async fn handle_spin_byte_builder(
         )
             .into_response();
     };
-    println!("authenticated token for player {}", id);
+
     let spin_id = Uuid::new_v4();
     let Ok(bal) = request_wager(&token, body.multiplier, spin_id).await else {
         return (
@@ -53,16 +53,12 @@ pub async fn handle_spin_byte_builder(
         )
             .into_response();
     };
-    println!("Pulled wager out of player wallet. Balance: {}", bal);
+
     let mut machine = ByteBuilder::new();
     machine.set_mult(body.multiplier);
     machine.spin();
     let payout = machine.payout();
-    println!(
-        "Spun machine. Payout: {}, byte: {}",
-        payout,
-        machine.byte().to_bitstring()
-    );
+
     let Ok(bal) = request_payout(&token, body.multiplier, payout, spin_id).await else {
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
@@ -70,7 +66,7 @@ pub async fn handle_spin_byte_builder(
         )
             .into_response();
     };
-    println!("Payed out the player. New balance: {}", bal);
+
     (
         StatusCode::OK,
         Json(SpinByteBuilderResponse {
