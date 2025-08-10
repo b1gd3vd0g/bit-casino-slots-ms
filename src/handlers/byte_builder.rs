@@ -37,32 +37,40 @@ pub async fn handle_spin_byte_builder(
     headers: HeaderMap,
     Json(body): Json<SpinByteBuilderReqBody>,
 ) -> Response {
-    let Ok((_, token)) = authenticate_player(&headers).await else {
+    let Ok((id, token)) = authenticate_player(&headers).await else {
         return (
             StatusCode::UNAUTHORIZED,
             Json(MessageResponse::new("Token authentication failed.")),
         )
             .into_response();
     };
+    println!("authenticated token for player {}", id);
     let spin_id = Uuid::new_v4();
-    let Ok(_) = request_wager(&token, body.multiplier, spin_id).await else {
+    let Ok(bal) = request_wager(&token, body.multiplier, spin_id).await else {
         return (
             StatusCode::CONFLICT,
             Json(MessageResponse::new("You do not have enough money.")),
         )
             .into_response();
     };
+    println!("Pulled wager out of player wallet. Balance: {}", bal);
     let mut machine = ByteBuilder::new();
     machine.set_mult(body.multiplier);
     machine.spin();
     let payout = machine.payout();
-    let Ok(_) = request_payout(&token, body.multiplier, payout, spin_id).await else {
+    println!(
+        "Spun machine. Payout: {}, byte: {}",
+        payout,
+        machine.byte().to_bitstring()
+    );
+    let Ok(bal) = request_payout(&token, body.multiplier, payout, spin_id).await else {
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(MessageResponse::new("The machine ate your bits! Oh no!")),
         )
             .into_response();
     };
+    println!("Payed out the player. New balance: {}", bal);
     (
         StatusCode::OK,
         Json(SpinByteBuilderResponse {
