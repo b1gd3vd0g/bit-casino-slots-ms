@@ -1,0 +1,50 @@
+openapi: 3.1.1
+
+info:
+  title: Bit Casino -- Slots Microservice
+  version: 0.1.0
+  summary: Allows players of Bit Casino to wager their bits and spin virtual slot machines.
+  contact:
+    name: Devin Peevy
+    url: https://bigdevdog.com
+    email: devin@bigdevdog.com
+
+servers:
+  - url: http://localhost:60603
+    description: Local integration testing via **docker compose**.
+
+paths:
+  /byte_builder:
+    post:
+      tags:
+        - spin
+      summary: Spin the custom slot machine "Byte Builder".
+      description: >
+        A player can call this method to request to spin **Byte Builder** with a provided
+        **multiplier**. The server will then:
+
+        - Ensure that the player possesses the **minimum wager** (defined as **128 * multiplier**)
+          by temporarily removing it from the player's bit wallet.
+        - Spin the virtual slot machine, calculating the **net payout** resulting from the spin. The
+          **net payout** means the amount of bits the player gained **or** lost as a result of the 
+          spin.
+        - Correct the player's balance by adding **minimum wager + net payout** to their bit wallet,
+          ensuring **initial balance + net payout == new balance**
+        - Return a response to the client indicating the resulting **byte** and **payout**.
+      security:
+        - TokenAuthentication: []
+      responses:
+        200:
+          description: Ok.
+        401:
+          description: Token authentication **failed**.
+        409:
+          description: Player's bit wallet does not contain enough bits to make the requested bet.
+        
+
+components:
+  securitySchemes:
+    TokenAuthentication:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
